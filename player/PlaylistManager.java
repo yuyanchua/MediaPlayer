@@ -27,40 +27,12 @@ public class PlaylistManager {
 //	private String defURL ="C:\\Users\\Hp\\neo_workspace\\MediaPlayer\\res\\test.json";
 	private String defURL = "res/test.json";
 	private MediaDetail addedMedia;
-	private List<MediaInfo> infoList;
+//	private List<MediaInfo> infoList;
 	
 	public PlaylistManager() {
 		startup();
 	}
 	
-	private void convertList() {
-		infoList = new ArrayList<>();
-		
-		for(int i = 0; i < mediaNameList.size(); i ++) {
-			infoList.add(new MediaInfo(i, mediaNameList.get(i)));
-			System.out.printf("%d: %s%n", i + 1, mediaNameList.get(i));
-		}
-	}
-	
-//	class MediaInfo{
-//		String mediaName;
-//		int index;
-//		
-//		MediaInfo(int index, String mediaName){
-//			this.index = index;
-//			this.mediaName = mediaName;
-//		}
-//		
-//		String getName() {
-//			return mediaName;
-//		}
-//		
-//		int getIndex() {
-//			return this.index;
-//		}
-//		
-//	}
-//	
 	private void startup() {
 		ReadJSON read = new ReadJSON();
 		read.readFile(defURL);
@@ -68,7 +40,7 @@ public class PlaylistManager {
 		mediaList = read.getMediaList();
 		extractMediaName();
 		retrievePlaylist();
-		convertList();
+//		convertList();
 	}
 	
 	private void extractMediaName() {
@@ -101,6 +73,10 @@ public class PlaylistManager {
 		if(media != null)
 			mediaList.add(media);
 		this.addedMedia = media;
+	}
+	
+	public void deleteMedia(int index) {
+		mediaList.remove(index);
 	}
 	
 	public Media getAddedMedia() {
@@ -142,7 +118,6 @@ public class PlaylistManager {
 	}
 	
 	public List<String> getList(){
-		
 		return this.mediaNameList; 	
 	}
 	
@@ -155,9 +130,9 @@ public class PlaylistManager {
 		return this.playlist;
 	}
 	
-	public List<MediaInfo> getInfoList(){
-		return this.infoList;
-	}
+//	public List<MediaInfo> getInfoList(){
+//		return this.infoList;
+//	}
 	
 	public List<String> getMediaUrlList(){
 		return this.mediaUrlList;

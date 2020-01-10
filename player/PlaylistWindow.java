@@ -4,12 +4,14 @@ import java.util.ArrayList;
 import java.util.List;
 
 import javafx.application.Application;
+import javafx.beans.binding.Bindings;
 import javafx.collections.FXCollections;
 import javafx.collections.ObservableList;
 import javafx.geometry.Insets;
 import javafx.scene.Scene;
 import javafx.scene.control.Button;
 import javafx.scene.control.Label;
+import javafx.scene.control.TableCell;
 import javafx.scene.control.TableColumn;
 import javafx.scene.control.TableView;
 import javafx.scene.control.cell.PropertyValueFactory;
@@ -30,13 +32,17 @@ public class PlaylistWindow extends Application{
 	private EdittedMediaPlayer editmp;
 	private PlaylistManager playMag;
 	
-	private Button btNext, btPrev, btDel, btAdd, btSave;
+	private Button btDel, btAdd, btSave;
+	private Label lbNotify;
 	private HBox controlBox;
+//	private FlowPane flowpane;
 	
-	private List<Media> playlist;
+//	private List<Media> playlist;
 	private List<String> mediaNameList;
-	private List<MediaPlayer> playerList;
-	private List<MediaControl> controlList;
+	private List<String> mediaUrlList;
+	
+//	private List<MediaPlayer> playerList;
+//	private List<MediaControl> controlList;
 	private List<MediaInfo> infoList;
 	
 	private TableView <MediaInfo> mediaTable;
@@ -44,41 +50,37 @@ public class PlaylistWindow extends Application{
 	
 	private Stage stage;
 	
-//	class MediaInfo{
-//		String mediaName;
-//		int index;
-//		
-//		MediaInfo(int index, String mediaName){
-//			this.index = index;
-//			this.mediaName = mediaName;
-//		}
-//		
-//		String getName() {
-//			return mediaName;
-//		}
-//		
-//		int getIndex() {
-//			return this.index;
-//		}
-//		
-//	}
+	public class MediaInfo{
+		private String mediaName;
+		private String mediaUrl;
+		
+		MediaInfo(String mediaName, String mediaUrl){
+			this.mediaName = mediaName;
+			this.mediaUrl = mediaUrl;
+		}
+
+		public String getMediaName() {
+			return mediaName;
+		}
+		public String getMediaUrl() {
+			return mediaUrl;
+		}
+
+	}
 	
 	public PlaylistWindow() {
 //		this.editmp = editmp;
 		
 		playMag = new PlaylistManager();
-		playlist = playMag.getPlayList();
 		mediaNameList = playMag.getList();
-		playerList = new ArrayList<>();
-		controlList = new ArrayList<>();
-		infoList = playMag.getInfoList();
+		mediaUrlList = playMag.getMediaUrlList();
+		infoList = new ArrayList<>();
 		
-		for(Media media : playlist) {
-			MediaPlayer player = new MediaPlayer(media);
-			MediaControl control = new MediaControl(player);
-			playerList.add(player);
-			controlList.add(control);
+		for(int i = 0; i < mediaNameList.size(); i++) {
+			infoList.add(new MediaInfo(
+					mediaNameList.get(i), mediaUrlList.get(i)));
 		}
+		
 	}
 
 	
@@ -88,23 +90,49 @@ public class PlaylistWindow extends Application{
 		btAdd = new Button("Add");
 		btDel = new Button("Delete");
 		btSave = new Button("Save");
+		lbNotify = new Label("Save Changes");
+		lbNotify.setVisible(false);
 		
-		controlBox.getChildren().addAll(btAdd, btDel, btSave);
+		controlBox.getChildren().addAll(btAdd, btDel, btSave, lbNotify);
+		controlBox.setSpacing(5);
+		controlBox.setPadding(new Insets(5, 5, 5 , 5));
 		
+		btAdd.setOnAction(e -> addNewMedia());
+		btDel.setOnAction(e -> deleteMedia());
+		btSave.setOnAction(e -> saveList());
 	}
 	
-//	private void addNewMedia() {
-//		try {
-//			playMag.addMedia(stage);
-//			
-//			String newMediaName = playMag.getAddedMediaName();
-//			String newMediaUrl = playMag.getAddedMediaUrl();
-//			
-//			
-//		}catch(Exception ex) {
-//			
-//		}
-//	}
+	private void addNewMedia() {
+		try {
+			playMag.addMedia(stage);
+			
+			String newMediaName = playMag.getAddedMediaName();
+			String newMediaUrl = playMag.getAddedMediaUrl();
+			
+			mediaNameList.add(newMediaName);
+			mediaUrlList.add(newMediaUrl);
+			
+			mediaTable.getItems().add(new MediaInfo(newMediaName, newMediaUrl));
+			
+			lbNotify.setVisible(false);
+			
+		}catch(Exception ex) {
+			System.out.println("Null");
+		}
+	}
+	
+	private void deleteMedia() {
+		MediaInfo item = mediaTable.getSelectionModel().getSelectedItem();
+		int index = mediaTable.getItems().indexOf(item);
+		mediaTable.getItems().remove(item);
+//		playMag.deleteMedia(item.mediaName, item.mediaUrl);
+		playMag.deleteMedia(index);
+	}
+	
+	private void saveList() {
+		playMag.saveChange();
+		lbNotify.setVisible(true);
+	}
 	
 	@SuppressWarnings("unchecked")
 	private void initialiseTable() {
@@ -112,17 +140,27 @@ public class PlaylistWindow extends Application{
 		record = FXCollections.observableArrayList(infoList);
 		mediaTable.setEditable(false);
 		
-		TableColumn<MediaInfo, Integer> index = new TableColumn<>("Index");
-		index.setCellValueFactory(new PropertyValueFactory<MediaInfo, Integer>("index"));
-		index.setMaxWidth(50);
-		index.setMinWidth(50);
+		TableColumn<MediaInfo, Void> indexCol = new TableColumn<>("Index");
+		indexCol.setCellFactory(col ->{
+			TableCell<MediaInfo, Void> cell = new TableCell<>();
+			cell.textProperty().bind(Bindings.createStringBinding(()->{
+				if(cell.isEmpty())
+					return null;
+				else
+					return Integer.toString(cell.getIndex() + 1);
+
+			}, cell.emptyProperty(), cell.indexProperty()));
+			return cell;
+		});
+		indexCol.setMaxWidth(50);
+		indexCol.setMinWidth(50);
 		
 		TableColumn<MediaInfo, String> mediaName = new TableColumn<>("Name");
 		mediaName.setCellValueFactory(new PropertyValueFactory<MediaInfo, String>("mediaName"));
-//		mediaName.setMaxWidth(320);
+		mediaName.setSortable(false);
 		
 		mediaTable.setItems(record);
-		mediaTable.getColumns().addAll(index, mediaName);
+		mediaTable.getColumns().addAll(indexCol, mediaName);
 		
 		//Fixed the column size to the window
 		//So that no unused space appear
@@ -140,7 +178,7 @@ public class PlaylistWindow extends Application{
 		
 		vbox.setSpacing(5);
 		vbox.setPadding(new Insets(10, 10, 10, 10));
-		Scene scene = new Scene(vbox, 400, 500);
+		Scene scene = new Scene(vbox, 400, 460);
 		
 		primaryStage.setTitle("Playlist");
 		primaryStage.setScene(scene);
