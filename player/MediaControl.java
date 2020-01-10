@@ -32,8 +32,6 @@
 
 package player;
 
-import javax.swing.GroupLayout.Alignment;
-
 import javafx.application.Platform;
 import javafx.beans.InvalidationListener;
 import javafx.beans.Observable;
@@ -74,7 +72,7 @@ public class MediaControl extends BorderPane {
         this.mp = mp;
         setStyle("-fx-background-color: #bfc2c7;");
         mediaView = new MediaView(mp);
-        Pane mvPane = new Pane() {
+        BorderPane mvPane = new BorderPane() {
         };
         mvPane.getChildren().add(mediaView);
         mvPane.setStyle("-fx-background-color: black;");
