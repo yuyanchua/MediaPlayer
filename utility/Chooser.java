@@ -22,14 +22,14 @@ public class Chooser { //To add to playlist
 		return this.filepath;
 	}
 	
-	public Media chooseMediaFile(Stage stage) {
+	public MediaDetail chooseMediaFile(Stage stage) {
 //		this.stage = stage;
 //		stage.initModality(Modality.APPLICATION_MODAL);
 		File mediaFile = fileChooser.showOpenDialog(stage);
 		return getMediaInfo(mediaFile);
 	}
 	
-	private Media getMediaInfo(File mediaFile) {
+	private MediaDetail getMediaInfo(File mediaFile) {
 		try {
 			String filepath = mediaFile.getAbsolutePath();
 			String name = "";
@@ -41,7 +41,7 @@ public class Chooser { //To add to playlist
 				}
 			}
 		
-			return new Media(name, filepath);
+			return new MediaDetail(name, filepath);
 		}catch(NullPointerException ex) {
 			return null;
 		}

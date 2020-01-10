@@ -20,7 +20,7 @@ public class TestJSON extends Application{
 	Text text;
 	Button btBrowse, btSave, btLoad;
 	Stage stage;
-	Media media;
+	MediaDetail media;
 	
 	private String url = "C:\\Users\\Hp\\neo_workspace\\MediaPlayer\\res\\testNull.json";
 	
@@ -70,7 +70,7 @@ public class TestJSON extends Application{
 		
 	}
 	
-	private void savetoJson(Media media) {
+	private void savetoJson(MediaDetail media) {
 		String name = " Test PlayList";
 		try {
 			WriteJSON write = new WriteJSON(url);
@@ -84,14 +84,14 @@ public class TestJSON extends Application{
 		ReadJSON read = new ReadJSON();
 		read.readFile(url);
 		String playlistName = read.getPlaylist();
-		List<Media> mediaList = read.getMediaList();
+		List<MediaDetail> mediaList = read.getMediaList();
 		printJSON(playlistName, mediaList);
 	}
 	
-	private void printJSON(String playlistName, List<Media> mediaList) {
+	private void printJSON(String playlistName, List<MediaDetail> mediaList) {
 		System.out.printf("Playlist Name: %s\n", playlistName);
 		try {
-		for(Media media: mediaList) {
+		for(MediaDetail media: mediaList) {
 			System.out.printf("Media Name: %s\n", media.getName());
 			System.out.printf("Media Url: %s\n\n", media.getUrl());
 		}

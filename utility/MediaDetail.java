@@ -1,12 +1,12 @@
 package utility;
 
-public class Media {
+public class MediaDetail {
 	private String name;
 	private String url;
 	
-	public Media() {}
+	public MediaDetail() {}
 	
-	public Media(String name, String url) {
+	public MediaDetail(String name, String url) {
 		setName(name);
 		setUrl(url);
 	}

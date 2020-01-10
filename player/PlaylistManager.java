@@ -4,28 +4,63 @@ import java.io.File;
 import java.io.FileNotFoundException;
 import java.util.*;
 
+import javafx.scene.media.Media;
 import javafx.stage.Stage;
+//import player.PlaylistWindow.MediaInfo;
 import utility.*;
+
 
 public class PlaylistManager {
 	//Startup 
 	//Read file
 	//Retrieve list if file found
 	//Blank list if file is not found
-	//utility.Media player read list
+	//Media player read list
 	//Save list when end
 	
 	private String listName;
-	private List<utility.Media> mediaList;
+	private List<MediaDetail> mediaList;
 	private List<String> mediaNameList;
-	private List<javafx.scene.media.Media> playlist;
-	private String defURL ="C:\\Users\\Hp\\neo_workspace\\MediaPlayer\\res\\test.json";
-	private utility.Media addedMedia;
+	private List<String> mediaUrlList;
+	
+	private List<Media> playlist;
+//	private String defURL ="C:\\Users\\Hp\\neo_workspace\\MediaPlayer\\res\\test.json";
+	private String defURL = "res/test.json";
+	private MediaDetail addedMedia;
+	private List<MediaInfo> infoList;
 	
 	public PlaylistManager() {
 		startup();
 	}
 	
+	private void convertList() {
+		infoList = new ArrayList<>();
+		
+		for(int i = 0; i < mediaNameList.size(); i ++) {
+			infoList.add(new MediaInfo(i, mediaNameList.get(i)));
+			System.out.printf("%d: %s%n", i + 1, mediaNameList.get(i));
+		}
+	}
+	
+//	class MediaInfo{
+//		String mediaName;
+//		int index;
+//		
+//		MediaInfo(int index, String mediaName){
+//			this.index = index;
+//			this.mediaName = mediaName;
+//		}
+//		
+//		String getName() {
+//			return mediaName;
+//		}
+//		
+//		int getIndex() {
+//			return this.index;
+//		}
+//		
+//	}
+//	
 	private void startup() {
 		ReadJSON read = new ReadJSON();
 		read.readFile(defURL);
@@ -33,11 +68,12 @@ public class PlaylistManager {
 		mediaList = read.getMediaList();
 		extractMediaName();
 		retrievePlaylist();
+		convertList();
 	}
 	
 	private void extractMediaName() {
 		List<String> list = new ArrayList<>();
-		for(utility.Media media : mediaList) {
+		for(MediaDetail media : mediaList) {
 			String mediaName = media.getName();
 			list.add(mediaName);
 		}
@@ -45,11 +81,13 @@ public class PlaylistManager {
 	}
 	
 	private void retrievePlaylist() {
-		List<javafx.scene.media.Media> playlist = new ArrayList<>();
-		for(utility.Media media : mediaList) {
+		List<Media> playlist = new ArrayList<>();
+		mediaUrlList = new ArrayList<>();
+		for(MediaDetail media : mediaList) {
 			String url = media.getUrl();
-			javafx.scene.media.Media mediaFile = 
-					new javafx.scene.media.Media(
+			mediaUrlList.add(url);
+			Media mediaFile = 
+					new Media(
 							new File(url).toURI().toString());
 			playlist.add(mediaFile);
 			
@@ -59,16 +97,16 @@ public class PlaylistManager {
 	
 	public void addMedia(Stage stage) {
 		Chooser choose = new Chooser();
-		utility.Media media = choose.chooseMediaFile(stage);
+		MediaDetail media = choose.chooseMediaFile(stage);
 		if(media != null)
 			mediaList.add(media);
 		this.addedMedia = media;
 	}
 	
-	public javafx.scene.media.Media getAddedMedia() {
+	public Media getAddedMedia() {
 		String url = addedMedia.getUrl();
-		javafx.scene.media.Media mediaFile = 
-				new javafx.scene.media.Media(
+		Media mediaFile = 
+				new Media(
 						new File(url).toURI().toString());
 		
 		return mediaFile;
@@ -78,11 +116,15 @@ public class PlaylistManager {
 		return addedMedia.getName();
 	}
 	
+	public String getAddedMediaUrl() {
+		return addedMedia.getUrl();
+	}
+	
 	public void editName(String listName) {
 		this.listName = listName;
 	}
 	
-	public void editList(List<utility.Media> mediaList) {
+	public void editList(List<MediaDetail> mediaList) {
 		this.mediaList = mediaList;
 	}
 	
@@ -105,12 +147,20 @@ public class PlaylistManager {
 	}
 	
 	
-	public List<utility.Media> getMediaList() {
+	public List<MediaDetail> getMediaList() {
 		return this.mediaList;
 	}
 	
-	public List<javafx.scene.media.Media> getPlayList(){
+	public List<Media> getPlayList(){
 		return this.playlist;
+	}
+	
+	public List<MediaInfo> getInfoList(){
+		return this.infoList;
+	}
+	
+	public List<String> getMediaUrlList(){
+		return this.mediaUrlList;
 	}
 	
 }

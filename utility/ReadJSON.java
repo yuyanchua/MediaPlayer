@@ -13,7 +13,7 @@ import java.io.*;
 
 public class ReadJSON {
 	private String playlist;
-	private List<Media> mediaList;
+	private List<MediaDetail> mediaList;
 	
 	public ReadJSON() {}
 	
@@ -47,7 +47,7 @@ public class ReadJSON {
 			String name = (String) jsonmedia.get("name");
 			String url = (String) jsonmedia.get("url");
 			
-			mediaList.add(new Media(name, url));
+			mediaList.add(new MediaDetail(name, url));
 			
 		}
 	}
@@ -56,7 +56,7 @@ public class ReadJSON {
 		return this.playlist;
 	}
 	
-	public List<Media> getMediaList(){
+	public List<MediaDetail> getMediaList(){
 		return this.mediaList;
 	}
 	

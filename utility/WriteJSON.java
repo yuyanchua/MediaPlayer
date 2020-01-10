@@ -15,14 +15,14 @@ public class WriteJSON {
 		this.dir = dir;
 	}
 	
-	public void writeFile(String name, Media media) throws FileNotFoundException{
-		List<Media> mediaList = new ArrayList<>();
+	public void writeFile(String name, MediaDetail media) throws FileNotFoundException{
+		List<MediaDetail> mediaList = new ArrayList<>();
 		mediaList.add(media);
 		writeFile(name,  mediaList);
 	}
 	
 	@SuppressWarnings("unchecked")
-	public void writeFile(String name, List<Media> mediaList) throws FileNotFoundException {
+	public void writeFile(String name, List<MediaDetail> mediaList) throws FileNotFoundException {
 		JSONObject jsonList = new JSONObject();
 		
 		//Playlist 
@@ -42,10 +42,10 @@ public class WriteJSON {
 	}
 	
 	@SuppressWarnings("unchecked")
-	private JSONArray addMedia(List<Media> mediaList) {
+	private JSONArray addMedia(List<MediaDetail> mediaList) {
 		JSONArray jsonMediaArr = new JSONArray();
 		
-		for(Media media: mediaList) {
+		for(MediaDetail media: mediaList) {
 			JSONObject jsonMedia = new JSONObject();
 			
 			jsonMedia.put("name", media.getName());

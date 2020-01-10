@@ -171,7 +171,7 @@ public class EdittedMediaPlayer extends Application{
 			items.add(newMediaName);
 
 		}catch(NullPointerException ex) {
-			
+			System.out.println("null");
 		}
 	}
 	
